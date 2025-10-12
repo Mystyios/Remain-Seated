@@ -488,9 +488,11 @@ GameObject:
   - component: {fileID: 296892952}
   - component: {fileID: 296892951}
   - component: {fileID: 296892950}
+  - component: {fileID: 296892955}
+  - component: {fileID: 296892954}
   m_Layer: 0
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -589,6 +591,45 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &296892954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296892949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9afa671e472c35745a678be47b6238eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player_Interaction
+--- !u!114 &296892955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296892949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34567028fe6bfc42a5b6c4319a70b23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 296892954}
+        m_TargetAssemblyTypeName: Player_Interaction, Assembly-CSharp
+        m_MethodName: PrintTest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,8 +1072,9 @@ MonoBehaviour:
   rightWheelAction: {fileID: -6668309582263193387, guid: 74231e6de7068914f97a5a0b562c5804, type: 3}
   scrollAction: {fileID: 1757591586408808879, guid: 74231e6de7068914f97a5a0b562c5804, type: 3}
   cameraAction: {fileID: -7397415879469489106, guid: 74231e6de7068914f97a5a0b562c5804, type: 3}
+  interactAction: {fileID: 8240713101430643387, guid: 74231e6de7068914f97a5a0b562c5804, type: 3}
   wheelForce: 100
-  turnForce: 50
+  turnForce: 5
   maxSpeed: 5
   maxTurnSpeed: 2
   playerCamera: {fileID: 330585546}

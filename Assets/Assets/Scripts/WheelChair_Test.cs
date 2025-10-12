@@ -7,6 +7,7 @@ public class WheelChair_Test : MonoBehaviour
     public InputActionReference rightWheelAction;
     public InputActionReference scrollAction;
     public InputActionReference cameraAction;
+    public InputActionReference interactAction;
 
     [Header("Movement Settings")]
     public float wheelForce = 200f;
@@ -31,9 +32,10 @@ public class WheelChair_Test : MonoBehaviour
     [SerializeField] private float maxVertical = 30f;
     [SerializeField] private float maxHorizontal = 60f;
 
-    private float baseYaw;
-    private float basePitch;
+    private float baseYaw; // used for initial camera alignment
+    private float basePitch; // used for initial camera alignment
     public Camera mainCamera;
+    
 
     private void Awake()
     {
@@ -42,6 +44,7 @@ public class WheelChair_Test : MonoBehaviour
 
     private void Start()
     {
+        // not used yet but will be when camera and player interaction is fully implemented so camera does not jump on start
         baseYaw = transform.eulerAngles.y;
         basePitch = transform.eulerAngles.x;
     }
@@ -52,6 +55,8 @@ public class WheelChair_Test : MonoBehaviour
         if (rightWheelAction) rightWheelAction.action.Enable();
         if (scrollAction) scrollAction.action.Enable();
         if (cameraAction) cameraAction.action.Enable();
+        
+        if(interactAction) interactAction.action.Enable();
 
         if (leftWheelAction)
         {
@@ -67,6 +72,7 @@ public class WheelChair_Test : MonoBehaviour
         {
             scrollAction.action.performed += OnScroll;
         }
+        
 
         rb.linearDamping = 1.5f;
         rb.angularDamping = 2f;
@@ -96,17 +102,16 @@ public class WheelChair_Test : MonoBehaviour
         {
             cameraAction.action.Disable();
         }
+        
+        if(interactAction) {interactAction.action.Disable(); }
+        
     }
 
     private void Update()
     {
         HandleCameraLook();
         FollowCameraToChair();
-    }
-
-    private void FixedUpdate()
-    {
-        CameraDetection();
+        CameraDetection(); // would like to handel in fixed update but player interactions will not work correctly then
     }
 
     // ---------------- Movement Logic ----------------
@@ -180,8 +185,17 @@ public class WheelChair_Test : MonoBehaviour
 
         if (Physics.Raycast(mainCamera.transform.position, fwd, out RaycastHit hit, 100f))
         {
-            Debug.Log("Hit " + hit.collider.name);
             Debug.DrawRay(mainCamera.transform.position, fwd * hit.distance, Color.red);
+
+            // Check if object has Interactable script
+            Interactable interactable = hit.collider.GetComponent<Interactable>();
+
+            if (interactable && interactAction.action.WasPressedThisFrame())
+            {
+                Debug.DrawRay(mainCamera.transform.position, fwd * 10f, Color.blue);
+                Debug.Log("Interacting with: " + hit.collider.name);
+                interactable.Interact(); // triggers the event on that object
+            }
         }
         else
         {
