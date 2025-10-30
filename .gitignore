@@ -97,3 +97,19 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+*.png
+
+*.meta
+
+*.wav
+
+Assets/Assets/Animation/TESTANIM.anim
+
+Assets/Assets/3dModels/MonsterFBX.fbx
+
+Assets/Assets/3dModels/Wall.obj
+
+*.mp3
+
+*.pkf
