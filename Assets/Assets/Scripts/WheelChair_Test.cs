@@ -12,6 +12,7 @@ public class WheelChair_Test : MonoBehaviour
     public InputActionReference scrollAction;
     public InputActionReference cameraAction;
     public InputActionReference interactAction;
+    public InputActionReference pickupAction;
 
     [Header("Movement Settings")]
     public float wheelForce = 200f;
@@ -29,6 +30,7 @@ public class WheelChair_Test : MonoBehaviour
     private bool rightWheelActive;
 
     [Header("Camera Rotation Settings")]
+    public FloatData mouseSensitivityData;
     public float mouseSensitivity = 10f;
     private float xRotation;
     private float yRotation;
@@ -56,6 +58,24 @@ public class WheelChair_Test : MonoBehaviour
     
     public UnityEvent OnmoveEvent;
 
+    private bool isToggled = false;
+    
+    [Header("Throwing Settings")]
+    public float throwForce = 2f;
+    public GameObject parentObject;
+    public Transform holdPoint;
+    public float holdDistance = 2f;
+    public float followSpeed = 10f;
+    private Rigidbody heldObject;
+    
+    public void SetmouseSensitivity()
+    {
+        // we can add a contumacious check in the update if we need this to contumacious check but this should work with an apply button
+        
+        mouseSensitivity = mouseSensitivityData.value;
+        
+    }
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -68,6 +88,8 @@ public class WheelChair_Test : MonoBehaviour
         basePitch = transform.eulerAngles.x;
         
         tmpText.text = "";
+        
+        mouseSensitivity = mouseSensitivityData.value;
         
     }
 
@@ -84,6 +106,8 @@ public class WheelChair_Test : MonoBehaviour
         if (cameraAction) cameraAction.action.Enable();
         
         if(interactAction) interactAction.action.Enable();
+
+        if (pickupAction) pickupAction.action.Enable(); 
 
         if (leftWheelAction)
         {
@@ -130,7 +154,8 @@ public class WheelChair_Test : MonoBehaviour
             cameraAction.action.Disable();
         }
         
-        if(interactAction) {interactAction.action.Disable(); }
+        if(interactAction) {interactAction.action.Disable();}
+        
         
     }
 
@@ -139,6 +164,14 @@ public class WheelChair_Test : MonoBehaviour
         HandleCameraLook();
         FollowCameraToChair();
         CameraDetection(); // would like to handel in fixed update but player interactions will not work correctly then
+        
+        SetmouseSensitivity();
+        
+        if (isToggled && heldObject != null)
+        {
+            MoveHeldObject();
+        }
+        
     }
 
     // ---------------- Movement Logic ----------------
@@ -157,7 +190,7 @@ public class WheelChair_Test : MonoBehaviour
 
     private void ApplyWheelPush(float scroll)
     {
-        soundCounter++; // ---------------- sound test only --------------
+        soundCounter++;
         
         if (rb.linearVelocity.magnitude > maxSpeed && leftWheelActive && rightWheelActive)
             return;
@@ -167,30 +200,30 @@ public class WheelChair_Test : MonoBehaviour
         if (leftWheelActive && rightWheelActive)
         {
             rb.AddForce(fwd * scroll * wheelForce, ForceMode.Force);
-            if (soundCounter >= numberoftimesToInvoke) // ---------------- sound test only --------------
+            if (soundCounter >= numberoftimesToInvoke) 
             {
-                OnmoveEvent.Invoke(); // ---------------- sound test only --------------
-                soundCounter = 0; // ---------------- sound test only --------------
+                OnmoveEvent.Invoke();
+                soundCounter = 0;
             }
         }
         else if (leftWheelActive)
         {
             if (Mathf.Abs(rb.angularVelocity.y) < maxTurnSpeed)
                 rb.AddTorque(Vector3.up * scroll * turnForce, ForceMode.Force);
-            if (soundCounter >= numberoftimesToInvoke) // ---------------- sound test only --------------
+            if (soundCounter >= numberoftimesToInvoke) 
             { 
-                OnmoveEvent.Invoke(); // ---------------- sound test only --------------
-                soundCounter = 0; // ---------------- sound test only --------------
+                OnmoveEvent.Invoke(); 
+                soundCounter = 0; 
             }
         }
         else if (rightWheelActive)
         {
             if (Mathf.Abs(rb.angularVelocity.y) < maxTurnSpeed)
                 rb.AddTorque(Vector3.up * -scroll * turnForce, ForceMode.Force);
-            if (soundCounter >= numberoftimesToInvoke)// ---------------- sound test only --------------
+            if (soundCounter >= numberoftimesToInvoke)
             {
-                OnmoveEvent.Invoke(); // ---------------- sound test only --------------
-                soundCounter = 0; // ---------------- sound test only --------------
+                OnmoveEvent.Invoke();
+                soundCounter = 0; 
             }
         }
     }
@@ -235,6 +268,7 @@ public class WheelChair_Test : MonoBehaviour
             MeshRenderer meshRenderer = hit.collider.GetComponent<MeshRenderer>();
             LookAT lookAt = hit.collider.GetComponent<LookAT>();
             
+            // ===================== highlight object =====================
 
             if (meshRenderer && interactable)
             {
@@ -258,6 +292,8 @@ public class WheelChair_Test : MonoBehaviour
                 }
             }
 
+            // ===================== interact with object =====================
+            
             if (interactable && interactAction.action.WasPressedThisFrame())
             {
                 Debug.DrawRay(mainCamera.transform.position, fwd * detectionRange, Color.blue);
@@ -265,6 +301,8 @@ public class WheelChair_Test : MonoBehaviour
                 interactable.Interact();
             }
 
+            // ===================== look at object =====================
+            
             if (lookAt && hit.collider.CompareTag("Look-at"))
             {
                 // only trigger once per new object
@@ -277,6 +315,35 @@ public class WheelChair_Test : MonoBehaviour
             else
             {
                 lastLookAtObject = null;
+            }
+            
+            // ===================== pick up object =====================
+            
+            if (pickupAction.action.WasPressedThisFrame() && hit.collider.CompareTag("Pick-Up")) // need to add a tag check here to only pick up certain objects
+            {
+                GameObject hitObject = hit.collider.gameObject;
+                Rigidbody rbhit = hitObject.GetComponent<Rigidbody>();
+                
+                isToggled = !isToggled;
+                
+                if (isToggled)
+                {
+                    heldObject = rbhit;
+                    //Debug.Log("pickup action pressed");
+                    // make hit object a child of the camera and remove physics by setting isKinematic to true or turning off gravity
+                    hit.transform.SetParent(parentObject.transform); // might need to remove this because I don't think its needed
+                    rbhit.useGravity = false;
+                    
+                }
+                else
+                {
+                    //Debug.Log("pickup action released");
+                    // release object from camera and re-enable physics by setting isKinematic to false or turning on gravity and apply force if needed
+                    rbhit.useGravity = true;
+                    hitObject.transform.SetParent(null); // might need to remove this because I don't think its needed
+                    rbhit.AddForce(mainCamera.transform.forward * throwForce, ForceMode.Impulse);
+                    heldObject = null;
+                }
             }
             
         }
@@ -295,6 +362,17 @@ public class WheelChair_Test : MonoBehaviour
         }
     }
 
+    private void MoveHeldObject()
+    {
+        // for moving the held object to follow the hold point in front of the camera smoothly
+        Vector3 targetPos = holdPoint.position + holdPoint.forward * holdDistance;
+
+        heldObject.MovePosition(
+            Vector3.Lerp(heldObject.position, targetPos, Time.deltaTime * followSpeed)
+        );
+        
+    }
+    
     // Add outline material temporarily
     private void AddOutline(MeshRenderer renderer)
     {

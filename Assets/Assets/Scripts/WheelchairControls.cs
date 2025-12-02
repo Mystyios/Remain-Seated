@@ -240,7 +240,7 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""fc242f7a-4e5a-4ade-baf2-aa34b475a481"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -277,6 +277,84 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Grab"",
+            ""id"": ""835409a2-73cb-4b31-8cec-10533293a68e"",
+            ""actions"": [
+                {
+                    ""name"": ""grabAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""a9d73ec9-3f2d-4f41-ba0c-70222166ade1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9163280d-ec19-4015-9e87-d8dad4510cea"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""grabAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33def117-2240-4fc2-b210-97af857104e5"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""grabAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Escape"",
+            ""id"": ""d8a30a02-72d3-4393-8506-1821c43b2940"",
+            ""actions"": [
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""9d92b893-7947-446f-a919-6983a8e2a645"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""757cbac4-1ec9-4596-ab2e-195858de837d"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eec171a5-01c5-49e3-8d11-4a315e1619ca"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -299,6 +377,12 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         // unlock
         m_unlock = asset.FindActionMap("unlock", throwIfNotFound: true);
         m_unlock_space = m_unlock.FindAction("space", throwIfNotFound: true);
+        // Grab
+        m_Grab = asset.FindActionMap("Grab", throwIfNotFound: true);
+        m_Grab_grabAction = m_Grab.FindAction("grabAction", throwIfNotFound: true);
+        // Escape
+        m_Escape = asset.FindActionMap("Escape", throwIfNotFound: true);
+        m_Escape_Newaction = m_Escape.FindAction("New action", throwIfNotFound: true);
     }
 
     ~@WheelchairControls()
@@ -309,6 +393,8 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Look.enabled, "This will cause a leak and performance issues, WheelchairControls.Look.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Interaction.enabled, "This will cause a leak and performance issues, WheelchairControls.Interaction.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_unlock.enabled, "This will cause a leak and performance issues, WheelchairControls.unlock.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Grab.enabled, "This will cause a leak and performance issues, WheelchairControls.Grab.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Escape.enabled, "This will cause a leak and performance issues, WheelchairControls.Escape.Disable() has not been called.");
     }
 
     /// <summary>
@@ -956,6 +1042,198 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UnlockActions" /> instance referencing this action map.
     /// </summary>
     public UnlockActions @unlock => new UnlockActions(this);
+
+    // Grab
+    private readonly InputActionMap m_Grab;
+    private List<IGrabActions> m_GrabActionsCallbackInterfaces = new List<IGrabActions>();
+    private readonly InputAction m_Grab_grabAction;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Grab".
+    /// </summary>
+    public struct GrabActions
+    {
+        private @WheelchairControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public GrabActions(@WheelchairControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Grab/grabAction".
+        /// </summary>
+        public InputAction @grabAction => m_Wrapper.m_Grab_grabAction;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Grab; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="GrabActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(GrabActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="GrabActions" />
+        public void AddCallbacks(IGrabActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GrabActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GrabActionsCallbackInterfaces.Add(instance);
+            @grabAction.started += instance.OnGrabAction;
+            @grabAction.performed += instance.OnGrabAction;
+            @grabAction.canceled += instance.OnGrabAction;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="GrabActions" />
+        private void UnregisterCallbacks(IGrabActions instance)
+        {
+            @grabAction.started -= instance.OnGrabAction;
+            @grabAction.performed -= instance.OnGrabAction;
+            @grabAction.canceled -= instance.OnGrabAction;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GrabActions.UnregisterCallbacks(IGrabActions)" />.
+        /// </summary>
+        /// <seealso cref="GrabActions.UnregisterCallbacks(IGrabActions)" />
+        public void RemoveCallbacks(IGrabActions instance)
+        {
+            if (m_Wrapper.m_GrabActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="GrabActions.AddCallbacks(IGrabActions)" />
+        /// <seealso cref="GrabActions.RemoveCallbacks(IGrabActions)" />
+        /// <seealso cref="GrabActions.UnregisterCallbacks(IGrabActions)" />
+        public void SetCallbacks(IGrabActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GrabActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GrabActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="GrabActions" /> instance referencing this action map.
+    /// </summary>
+    public GrabActions @Grab => new GrabActions(this);
+
+    // Escape
+    private readonly InputActionMap m_Escape;
+    private List<IEscapeActions> m_EscapeActionsCallbackInterfaces = new List<IEscapeActions>();
+    private readonly InputAction m_Escape_Newaction;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Escape".
+    /// </summary>
+    public struct EscapeActions
+    {
+        private @WheelchairControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public EscapeActions(@WheelchairControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Escape/Newaction".
+        /// </summary>
+        public InputAction @Newaction => m_Wrapper.m_Escape_Newaction;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Escape; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="EscapeActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(EscapeActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="EscapeActions" />
+        public void AddCallbacks(IEscapeActions instance)
+        {
+            if (instance == null || m_Wrapper.m_EscapeActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_EscapeActionsCallbackInterfaces.Add(instance);
+            @Newaction.started += instance.OnNewaction;
+            @Newaction.performed += instance.OnNewaction;
+            @Newaction.canceled += instance.OnNewaction;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="EscapeActions" />
+        private void UnregisterCallbacks(IEscapeActions instance)
+        {
+            @Newaction.started -= instance.OnNewaction;
+            @Newaction.performed -= instance.OnNewaction;
+            @Newaction.canceled -= instance.OnNewaction;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="EscapeActions.UnregisterCallbacks(IEscapeActions)" />.
+        /// </summary>
+        /// <seealso cref="EscapeActions.UnregisterCallbacks(IEscapeActions)" />
+        public void RemoveCallbacks(IEscapeActions instance)
+        {
+            if (m_Wrapper.m_EscapeActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="EscapeActions.AddCallbacks(IEscapeActions)" />
+        /// <seealso cref="EscapeActions.RemoveCallbacks(IEscapeActions)" />
+        /// <seealso cref="EscapeActions.UnregisterCallbacks(IEscapeActions)" />
+        public void SetCallbacks(IEscapeActions instance)
+        {
+            foreach (var item in m_Wrapper.m_EscapeActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_EscapeActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="EscapeActions" /> instance referencing this action map.
+    /// </summary>
+    public EscapeActions @Escape => new EscapeActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "LeftWheel" which allows adding and removing callbacks.
     /// </summary>
@@ -1045,5 +1323,35 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSpace(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Grab" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="GrabActions.AddCallbacks(IGrabActions)" />
+    /// <seealso cref="GrabActions.RemoveCallbacks(IGrabActions)" />
+    public interface IGrabActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "grabAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGrabAction(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Escape" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="EscapeActions.AddCallbacks(IEscapeActions)" />
+    /// <seealso cref="EscapeActions.RemoveCallbacks(IEscapeActions)" />
+    public interface IEscapeActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "New action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNewaction(InputAction.CallbackContext context);
     }
 }
