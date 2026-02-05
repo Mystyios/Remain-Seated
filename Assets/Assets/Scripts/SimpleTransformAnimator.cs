@@ -7,12 +7,14 @@ public class SimpleTransformAnimator : MonoBehaviour
     public float moveY = 0f;
     public float moveZ = 0f;
     public bool animatePosition = true;
+    public bool setPos = false;
 
     [Header("Rotation Offset (Relative)")]
     public float rotX = 0f;
     public float rotY = 0f;
     public float rotZ = 0f;
     public bool animateRotation = true;
+    public bool setRot = false;
 
     [Header("Settings")]
     [Min(0f)] public float duration = 1f;
@@ -36,11 +38,17 @@ public class SimpleTransformAnimator : MonoBehaviour
 
     private System.Collections.IEnumerator Animate()
     {
+        Debug.Log("Play Anim");
         Vector3 startPos = useLocalSpace ? transform.localPosition : transform.position;
         Quaternion startRot = useLocalSpace ? transform.localRotation : transform.rotation;
 
-        Vector3 targetPos = startPos + new Vector3(moveX, moveY, moveZ);
-        Quaternion targetRot = startRot * Quaternion.Euler(rotX, rotY, rotZ);
+        Vector3 targetPos = setPos ? 
+        new Vector3(moveX, moveY, moveZ) : 
+        startPos + new Vector3(moveX, moveY, moveZ);
+
+        Quaternion targetRot = setRot ?
+        Quaternion.Euler(rotX, rotY, rotZ) :
+        startRot * Quaternion.Euler(rotX, rotY, rotZ);
 
         if (duration <= 0f)
         {

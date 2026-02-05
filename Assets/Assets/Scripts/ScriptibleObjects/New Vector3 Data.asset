@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f41cb1b065998747b33d733b8bec506, type: 3}
+  m_Script: {fileID: 11500000, guid: 4c3120ffdcf5058438173dc47a04a5fa, type: 3}
   m_Name: New Vector3 Data
-  m_EditorClassIdentifier: Assembly-CSharp::Vector3Data
+  m_EditorClassIdentifier: Assembly-CSharp::Vector3List
   value:
-  - {x: 48.9, y: 3.6761937, z: 48.23}
-  - {x: 48.9, y: 3.6761937, z: 48.23}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
