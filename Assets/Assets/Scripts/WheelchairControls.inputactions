@@ -269,6 +269,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Jumpscare",
+            "id": "44bd8405-1f36-4c82-b88a-d38aa6545912",
+            "actions": [
+                {
+                    "name": "Jumpscare",
+                    "type": "Button",
+                    "id": "cc62c319-7565-4cf5-abe2-ed6e6721fdac",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f8eb1a69-4701-40aa-8cca-56f10c38b6da",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jumpscare",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
