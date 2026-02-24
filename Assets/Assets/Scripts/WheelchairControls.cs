@@ -355,6 +355,34 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Jumpscare"",
+            ""id"": ""44bd8405-1f36-4c82-b88a-d38aa6545912"",
+            ""actions"": [
+                {
+                    ""name"": ""Jumpscare"",
+                    ""type"": ""Button"",
+                    ""id"": ""cc62c319-7565-4cf5-abe2-ed6e6721fdac"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f8eb1a69-4701-40aa-8cca-56f10c38b6da"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jumpscare"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -383,6 +411,9 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         // Escape
         m_Escape = asset.FindActionMap("Escape", throwIfNotFound: true);
         m_Escape_Newaction = m_Escape.FindAction("New action", throwIfNotFound: true);
+        // Jumpscare
+        m_Jumpscare = asset.FindActionMap("Jumpscare", throwIfNotFound: true);
+        m_Jumpscare_Jumpscare = m_Jumpscare.FindAction("Jumpscare", throwIfNotFound: true);
     }
 
     ~@WheelchairControls()
@@ -395,6 +426,7 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_unlock.enabled, "This will cause a leak and performance issues, WheelchairControls.unlock.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Grab.enabled, "This will cause a leak and performance issues, WheelchairControls.Grab.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Escape.enabled, "This will cause a leak and performance issues, WheelchairControls.Escape.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Jumpscare.enabled, "This will cause a leak and performance issues, WheelchairControls.Jumpscare.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1234,6 +1266,102 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="EscapeActions" /> instance referencing this action map.
     /// </summary>
     public EscapeActions @Escape => new EscapeActions(this);
+
+    // Jumpscare
+    private readonly InputActionMap m_Jumpscare;
+    private List<IJumpscareActions> m_JumpscareActionsCallbackInterfaces = new List<IJumpscareActions>();
+    private readonly InputAction m_Jumpscare_Jumpscare;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Jumpscare".
+    /// </summary>
+    public struct JumpscareActions
+    {
+        private @WheelchairControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public JumpscareActions(@WheelchairControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Jumpscare/Jumpscare".
+        /// </summary>
+        public InputAction @Jumpscare => m_Wrapper.m_Jumpscare_Jumpscare;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Jumpscare; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="JumpscareActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(JumpscareActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="JumpscareActions" />
+        public void AddCallbacks(IJumpscareActions instance)
+        {
+            if (instance == null || m_Wrapper.m_JumpscareActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_JumpscareActionsCallbackInterfaces.Add(instance);
+            @Jumpscare.started += instance.OnJumpscare;
+            @Jumpscare.performed += instance.OnJumpscare;
+            @Jumpscare.canceled += instance.OnJumpscare;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="JumpscareActions" />
+        private void UnregisterCallbacks(IJumpscareActions instance)
+        {
+            @Jumpscare.started -= instance.OnJumpscare;
+            @Jumpscare.performed -= instance.OnJumpscare;
+            @Jumpscare.canceled -= instance.OnJumpscare;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="JumpscareActions.UnregisterCallbacks(IJumpscareActions)" />.
+        /// </summary>
+        /// <seealso cref="JumpscareActions.UnregisterCallbacks(IJumpscareActions)" />
+        public void RemoveCallbacks(IJumpscareActions instance)
+        {
+            if (m_Wrapper.m_JumpscareActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="JumpscareActions.AddCallbacks(IJumpscareActions)" />
+        /// <seealso cref="JumpscareActions.RemoveCallbacks(IJumpscareActions)" />
+        /// <seealso cref="JumpscareActions.UnregisterCallbacks(IJumpscareActions)" />
+        public void SetCallbacks(IJumpscareActions instance)
+        {
+            foreach (var item in m_Wrapper.m_JumpscareActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_JumpscareActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="JumpscareActions" /> instance referencing this action map.
+    /// </summary>
+    public JumpscareActions @Jumpscare => new JumpscareActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "LeftWheel" which allows adding and removing callbacks.
     /// </summary>
@@ -1353,5 +1481,20 @@ public partial class @WheelchairControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNewaction(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Jumpscare" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="JumpscareActions.AddCallbacks(IJumpscareActions)" />
+    /// <seealso cref="JumpscareActions.RemoveCallbacks(IJumpscareActions)" />
+    public interface IJumpscareActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Jumpscare" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnJumpscare(InputAction.CallbackContext context);
     }
 }
